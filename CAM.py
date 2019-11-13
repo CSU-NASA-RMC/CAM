@@ -2,17 +2,27 @@
 import time
 import remote
 import self_test
+import manual
+import auto
+
+#Do what Houston says
+def cam(option):
+    print(option)
+    if option == b'HI': # Hello
+        return b'HI' # Be polite
+    elif option == b'ST': # Self test
+        return self_test.self_test()
+    elif option == b'MM': # Manual mode
+        return b'OK'
+        manual.init()
+    elif option == b'AR': # Autonomous run
+        return b'OK'
+        auto.init()
+    elif option == b'SD': # Shutdown
+        print("Shutting down")
+        return b'OK'
+        # TODO: Linux shutdown command
 
 if __name__ == "__main__":
-    # Tell houston we are booting up, wait for response
     while True:
-        try:
-            if remote.send(b"RUNNING CHECKS") == b"OK": break
-        except:
-            print("Connect fail, retrying in 5 sec")
-            time.sleep(5)
-
-    # Run self checks and get operating mode
-    mode = remote.send(self_test.self_test())
-
-    print("Operating mode: ", mode)
+        remote.listen(cam)

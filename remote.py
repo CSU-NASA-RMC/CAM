@@ -1,16 +1,23 @@
 # Establish network connection to houston/remote.py
-# Acts as TCP/IP client
+# Acts as TCP/IP server
 
 import socket
 
-def send(data):
-    host = "127.0.0.1" # Can probably be done automatically
-    port = 42069 # Houston port
+# Set a function to receive data from Houston and sends the return
+# Input and output are byte objects
+def listen(operation):
+    host = '' # All network interfaces
+    port = 42069 # Carefully chosen
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((host, port))
-        s.sendall(data)
-        return s.recv(1024)
-
-if __name__ == "__main__":
-    print(send(b"CaN yOu HeaR mE?1?!"))
+        s.bind((host, port))
+        s.listen(1)
+        conn, addr = s.accept()
+        with conn:
+            while True:
+                data = conn.recv(1024) # Buffer size
+                if not data: break
+                response = operation(data)
+                conn.sendall(response)
+                return response
+    return
