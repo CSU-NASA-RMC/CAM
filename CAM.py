@@ -5,6 +5,8 @@ import self_test
 import manual
 import auto
 
+port = 42069  # Carefully chosen
+
 #Do what Houston says
 def cam(option):
     print(option)
@@ -25,4 +27,4 @@ def cam(option):
 
 if __name__ == "__main__":
     while True:
-        remote.listen(cam)
+        remote.listen(cam, port)

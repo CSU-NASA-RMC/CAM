@@ -5,9 +5,8 @@ import socket
 
 # Set a function to receive data from Houston and sends the return
 # Input and output are byte objects
-def listen(operation):
+def listen(operation, port):
     host = '' # All network interfaces
-    port = 42069 # Carefully chosen
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind((host, port))
