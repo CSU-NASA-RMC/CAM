@@ -16,7 +16,14 @@ def listen(operation, port):
             while True:
                 data = conn.recv(1024) # Buffer size
                 if not data: break
-                response = operation(data)
-                conn.sendall(response)
+                response = operation(data.decode('utf-8'))
+                conn.sendall(bytes(response, 'utf-8'))
                 return response
     return
+
+def echo(data):
+    return data
+
+if __name__ == "__main__":
+    while True:
+        print(listen(echo, 6969))
