@@ -1,6 +1,7 @@
 # Begin autonomous run
 import remote
 import importlib
+import logging
 
 port = 42070
 
@@ -8,14 +9,16 @@ port = 42070
 def get_name(name):
     global script
     try:
-        print(name)
+        logging.info("Loading file: " + name)
         script = importlib.import_module(name)
         return 'OK'
     except:
+        logging.error("Load failed")
         return 'LOAD FAIL'
-        exit(1)
 
 def init():
-    print("Beginning autonomous run")
+    logging.info("Beginning autonomous run")
     remote.listen(get_name, port)
+    if script == None:
+        exit(1)
     script.loop()

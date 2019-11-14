@@ -7,15 +7,17 @@ import manual
 import autorun
 import threading
 
-port = 42069  # Carefully chosen
+logging.basicConfig(filename='CAM.log',
+                    format='%(asctime)s : %(levelname)s : %(message)s',
+                    level=logging.INFO) # Log each run
 
-proc = ""
+port = 42069  # Carefully chosen
 
 #Do what Houston says
 def cam(option):
     global proc
     proc = ""
-    logging.info(option)
+    logging.info("Executing command: " + option)
     if option == 'HI': # Hello
         return 'HI' # Be polite
     elif option == 'ST': # Self test
@@ -28,8 +30,15 @@ def cam(option):
         return 'OK'
     elif option == 'SD': # Shutdown
         logging.info("Shutting down")
+        logging.shutdown()
+        # TODO: Delayed linux shutdown command
         return 'OK'
-        # TODO: Linux shutdown command
+    elif option == 'SL': # Send logs to Houston
+        # TODO: Send logs
+        return 'OK'
+    else: # Not found
+        logging.error("Command not found")
+        return 'OK'
 
 if __name__ == "__main__":
     while True:

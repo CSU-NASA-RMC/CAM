@@ -1,4 +1,5 @@
 # Manual control of robot from houston
+import logging
 
 def init():
-    print("Beginning manual control mode")
+    logging.info("Beginning manual control mode")
