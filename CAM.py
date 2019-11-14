@@ -5,7 +5,7 @@ import remote
 import self_test
 import manual
 import autorun
-import threading
+import multiprocessing
 
 logging.basicConfig(filename='CAM.log',
                     format='%(asctime)s : %(levelname)s : %(message)s',
@@ -13,20 +13,33 @@ logging.basicConfig(filename='CAM.log',
 
 port = 42069  # Carefully chosen
 
-#Do what Houston says
+proc = None # Control thread
+
+# Do what Houston says
 def cam(option):
     global proc
-    proc = ""
     logging.info("Executing command: " + option)
-    if option == 'HI': # Hello
-        return 'HI' # Be polite
+    if option == 'HI': # Get status
+        if proc is None:
+            return 'HI' # Ready for command
+        elif proc.is_alive():
+            logging.warning("Possible broken connection")
+            return 'BZ' # Busy
+        else:
+            return 'HI'
+    elif option == 'KP': # Kill process
+        logging.warning("Killing process")
+        proc.terminate()
+        return 'OK' # It's done
     elif option == 'ST': # Self test
         return self_test.self_test()
     elif option == 'MM': # Manual mode
-        proc = threading.Thread(target=manual.init, args='', daemon=True)
+        proc = multiprocessing.Process(target=manual.init, args='')
+        proc.start()
         return 'OK'
     elif option == 'AR': # Autonomous run
-        proc = threading.Thread(target=autorun.init, args='', daemon=True)
+        proc = multiprocessing.Process(target=autorun.init, args='')
+        proc.start()
         return 'OK'
     elif option == 'SD': # Shutdown
         logging.info("Shutting down")
@@ -40,10 +53,7 @@ def cam(option):
         logging.error("Command not found")
         return 'OK'
 
+# Runs on boot of CAM
 if __name__ == "__main__":
     while True:
         remote.listen(cam, port)
-        if proc != '':
-            logging.info("Starting control thread")
-            proc.start()
-            proc.join()
