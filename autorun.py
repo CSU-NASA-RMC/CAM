@@ -3,8 +3,9 @@ import remote
 import importlib
 import logging
 import multiprocessing
+import time
 
-port = 42070
+port = 42071
 
 script = None # Will get from Houston
 
@@ -19,29 +20,18 @@ def get_name(name):
         logging.error("Load failed")
         return 'LOAD FAIL'
 
-# Pass commands
-def pass_commands():
-    global script
-    while True:
-        remote.listen(script.command, port)
-        #TODO: Fix this part
-
 # Set up and start a run
 def init():
+    global script
     logging.info("Beginning autonomous run")
 
     # Get name from Houston
     remote.listen(get_name, port)
-    if script == None:
-        return
 
-    # Start program loops
+    # Program loops
     logging.info("Launching script")
     loop = multiprocessing.Process(target=script.control, args='')
-    listener = multiprocessing.Process(target=pass_commands, args='')
     loop.start()
-    listener.start()
     logging.info("Waiting for script to exit")
     loop.join()  # TODO: Crash detection
-    listener.terminate()
     logging.info("Autonomous run complete")

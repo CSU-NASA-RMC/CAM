@@ -9,7 +9,7 @@ import multiprocessing
 
 logging.basicConfig(filename='CAM.log',
                     format='%(asctime)s : %(levelname)s : %(message)s',
-                    level=logging.INFO) # Log each run
+                    level=logging.DEBUG) # Log each run
 
 port = 42069  # Carefully chosen
 
@@ -55,5 +55,5 @@ def cam(option):
 
 # Runs on boot of CAM
 if __name__ == "__main__":
-    while True:
-        remote.listen(cam, port)
+    logging.info("Starting up")
+    remote.listen(cam, port, True)

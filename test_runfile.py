@@ -20,9 +20,3 @@ def control():
         # Check for completion
         if i == 10:
             return # Exit control script
-
-# Commands sent from Houston will run this code, passing the input as cmd
-def command(cmd):
-    # Do stuff with command
-    response = "do {} yourself".format(cmd)
-    return response
