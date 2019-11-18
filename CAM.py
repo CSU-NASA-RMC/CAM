@@ -45,7 +45,7 @@ def cam(option):
         logging.info("Shutting down")
         logging.shutdown()
         # TODO: Delayed linux shutdown command
-        return 'OK'
+        return 'CC'
     elif option == 'SL': # Send logs to Houston
         # TODO: Send logs
         return 'OK'

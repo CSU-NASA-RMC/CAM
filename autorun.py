@@ -24,14 +24,32 @@ def get_name(name):
 def init():
     global script
     logging.info("Beginning autonomous run")
-
-    # Get name from Houston
-    remote.listen(get_name, port)
+    remote.listen(get_name, port) # Get name from Houston
 
     # Program loops
     logging.info("Launching script")
-    loop = multiprocessing.Process(target=script.control, args='')
-    loop.start()
-    logging.info("Waiting for script to exit")
-    loop.join()  # TODO: Crash detection
+    status = multiprocessing.Queue()
+    loop = multiprocessing.Process(target=script.control, args=(status,))
+    loop.daemon = True
+
+    def listen(cmd):
+        if cmd == "KP":
+            logging.info("Killing autonomous script")
+            loop.terminate()
+            return "CC"
+        elif cmd == "GO":
+            logging.info("Starting autonomous script")
+            loop.start()
+            return "OK"
+        elif cmd == "0":
+            logging.info("Sending status of autonomous script")
+            if loop.exitcode == None:
+                if loop.is_alive():
+                    return str(status.get())
+                else:
+                    return "READY"
+            else:
+                return "FINISHED"
+
+    remote.listen(listen, port, True)
     logging.info("Autonomous run complete")

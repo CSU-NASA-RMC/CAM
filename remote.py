@@ -20,7 +20,8 @@ def listen_unsafe(operation, port, keep_alive):
                 if not data: break
                 response = operation(data.decode('utf-8'))
                 conn.sendall(bytes(response, 'utf-8'))
-                if not keep_alive:
+                if not keep_alive or data == b'CC' or response == 'CC':
+                    logging.debug("Closing listener on port: " + port)
                     s.close()
                     return response
 
@@ -30,6 +31,7 @@ def listen(operation, port, keep_alive=False):
         listen_unsafe(operation, port, keep_alive)
     except:
         logging.error("Networking error")
+        # TODO: Not this
 
 def echo(data):
     return data
