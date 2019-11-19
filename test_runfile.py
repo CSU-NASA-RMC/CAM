@@ -14,11 +14,12 @@ def control(status):
         # Code here will run on a loop
 
         # Get sensor data, do stuff, etc.
-        # Dummy code
         i += 1
-        #status.put("Value has reached: {}".format(i)) # Can be retrieved by Houston
         time.sleep(1)
 
-        # Check for completion
+        # Post a status to be retrieved by Houston
+        status.put("Value has reached: {}".format(i))
+
+        # Perform some check for completion
         if i == 20:
             return # Exit control script

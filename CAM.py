@@ -1,5 +1,4 @@
 # Main program for CAM, should run on boot
-import time
 import logging
 import remote
 import self_test
@@ -9,9 +8,9 @@ import multiprocessing
 
 logging.basicConfig(filename='CAM.log',
                     format='%(asctime)s : %(levelname)s : %(message)s',
-                    level=logging.DEBUG) # Log each run
+                    level=logging.DEBUG) # Log each run to file
 
-port = 42069  # Carefully chosen
+port = 42069  # Port for communication
 
 proc = None # Control thread
 
@@ -19,41 +18,69 @@ proc = None # Control thread
 def cam(option):
     global proc
     logging.info("Executing command: " + option)
-    if option == 'HI': # Get status
+
+    # Get status
+    if option == 'HI':
+        # No running process
         if proc is None:
             return 'HI' # Ready for command
+
+        # Abandoned process
         elif proc.is_alive():
             logging.warning("Possible broken connection")
             return 'BZ' # Busy
+
+        # Previous process finished
         else:
             return 'HI'
-    elif option == 'KP': # Kill process
+
+    # Kill process
+    elif option == 'KP':
         logging.warning("Killing process")
         proc.terminate()
         return 'OK' # It's done
-    elif option == 'ST': # Self test
+
+    # Self test
+    elif option == 'ST':
         return self_test.self_test()
-    elif option == 'MM': # Manual mode
+
+    # Manual mode
+    elif option == 'MM':
+        # Spawn as separate process
         proc = multiprocessing.Process(target=manual.init, args='')
         proc.start()
         return 'OK'
-    elif option == 'AR': # Autonomous run
+
+    # Autonomous run
+    elif option == 'AR':
+        # Spawn as separate process
         proc = multiprocessing.Process(target=autorun.init, args='')
         proc.start()
         return 'OK'
-    elif option == 'SD': # Shutdown
+
+    # Shutdown
+    elif option == 'SD':
         logging.info("Shutting down")
         logging.shutdown()
         # TODO: Delayed linux shutdown command
         return 'CC'
-    elif option == 'SL': # Send logs to Houston
-        # TODO: Send logs
+
+    # Send logs to Houston
+    elif option == 'SL':
+        # TODO
         return 'OK'
-    else: # Not found
+
+    # Retrieve runfile from houston
+    elif option == 'UP':
+        # TODO
+        return 'OK'
+
+    # Not found
+    else:
         logging.error("Command not found")
-        return 'OK'
+        return 'NO'
 
 # Runs on boot of CAM
 if __name__ == "__main__":
     logging.info("Starting up")
-    remote.listen(cam, port, True)
+    remote.listen(cam, port, True) # Listens on a loop

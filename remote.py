@@ -3,13 +3,12 @@
 
 import socket
 import logging
-import time
 
 # Set a function to receive data from Houston and sends the return
 def listen_unsafe(operation, port, keep_alive):
     host = '' # All network interfaces
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # Quick unbind
     s.bind((host, port))
     s.listen(1)
     while True:
@@ -18,21 +17,26 @@ def listen_unsafe(operation, port, keep_alive):
             while True:
                 data = conn.recv(1024) # Buffer size
                 if not data: break
+
                 response = operation(data.decode('utf-8'))
                 conn.sendall(bytes(response, 'utf-8'))
+
+                # Optionally loop until CLOSE-CONNECTION is sent or received
                 if not keep_alive or data == b'CC' or response == 'CC':
                     logging.debug("Closing listener on port: " + port)
                     s.close()
                     return response
 
+# TODO: Probably shouldn't do this
+# Tends to throw tons of errors when closing, usually safe to ignore
 def listen(operation, port, keep_alive=False):
     logging.debug("Listening on port: {}, keep_alive: {}".format(str(port), keep_alive))
     try:
         listen_unsafe(operation, port, keep_alive)
     except:
         logging.error("Networking error")
-        # TODO: Not this
 
+# Testing
 def echo(data):
     return data
 
