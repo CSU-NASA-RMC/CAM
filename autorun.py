@@ -45,7 +45,10 @@ def init():
             logging.info("Sending status of autonomous script")
             if loop.exitcode == None:
                 if loop.is_alive():
-                    return str(status.get())
+                    msg = "LIVE"
+                    while not status.empty():
+                        msg = status.get()
+                    return msg
                 else:
                     return "READY"
             else:

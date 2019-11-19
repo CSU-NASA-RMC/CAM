@@ -16,8 +16,7 @@ def control(status):
         # Get sensor data, do stuff, etc.
         # Dummy code
         i += 1
-        print(i)
-        status.put("Value has reached: {}".format(i))
+        #status.put("Value has reached: {}".format(i)) # Can be retrieved by Houston
         time.sleep(1)
 
         # Check for completion
