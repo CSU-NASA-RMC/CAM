@@ -22,7 +22,7 @@ def read_output(process, append, fov):
                 append([angle, dist, quality])
 
         except:
-            logging.debug("Bad lidar data", meas)
+            logging.debug("Bad lidar data")
 
 # Create object to connect to LIDAR
 class lidar:
