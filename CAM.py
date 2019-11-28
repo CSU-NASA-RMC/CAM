@@ -90,5 +90,6 @@ def cam(option):
 
 # Runs on boot of CAM
 if __name__ == "__main__":
+    print("Begin listening")
     logging.info("Starting up")
     remote.listen(cam, port, True) # Listens on a loop
