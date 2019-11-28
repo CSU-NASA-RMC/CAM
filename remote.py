@@ -34,7 +34,7 @@ def listen(operation, port, keep_alive=False):
     try:
         listen_unsafe(operation, port, keep_alive)
     except:
-        logging.error("Networking error")
+        logging.warning("Networking error") # Closing listener throws tons of errors, pretty safe to ignore
 
 # Testing
 def echo(data):

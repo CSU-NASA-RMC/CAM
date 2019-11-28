@@ -5,6 +5,7 @@ import self_test
 import manual
 import autorun
 import multiprocessing
+import motor
 
 logging.basicConfig(filename='CAM.log',
                     format='%(asctime)s : %(levelname)s : %(message)s',
@@ -14,9 +15,14 @@ port = 42069  # Port for communication
 
 proc = None # Control thread
 
+motors = motor.motors # Motor manager
+motors.stop(False) # Hard stop motors
+
 # Do what Houston says
 def cam(option):
     global proc
+    global motors
+
     logging.info("Executing command: " + option)
 
     # Get status
@@ -38,6 +44,7 @@ def cam(option):
     elif option == 'KP':
         logging.warning("Killing process")
         proc.terminate()
+        motors.stop(False)  # Hard stop motors
         return 'OK' # It's done
 
     # Self test
@@ -47,14 +54,14 @@ def cam(option):
     # Manual mode
     elif option == 'MM':
         # Spawn as separate process
-        proc = multiprocessing.Process(target=manual.init, args='')
+        proc = multiprocessing.Process(target=manual.init, args=(motors,))
         proc.start()
         return 'OK'
 
     # Autonomous run
     elif option == 'AR':
         # Spawn as separate process
-        proc = multiprocessing.Process(target=autorun.init, args='')
+        proc = multiprocessing.Process(target=autorun.init, args=(motors,))
         proc.start()
         return 'OK'
 
@@ -79,6 +86,7 @@ def cam(option):
     else:
         logging.error("Command not found")
         return 'NO'
+
 
 # Runs on boot of CAM
 if __name__ == "__main__":

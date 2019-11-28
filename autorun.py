@@ -3,6 +3,7 @@ import remote
 import importlib
 import logging
 import multiprocessing
+import motor
 
 port = 42071 # Port for communication
 
@@ -20,7 +21,7 @@ def get_name(name):
         return 'LOAD FAIL'
 
 # Set up and start a run
-def init():
+def init(prov_mot):
     global script
     logging.info("Beginning autonomous run")
     remote.listen(get_name, port) # Get name from Houston
@@ -30,7 +31,7 @@ def init():
     # Program will run as separate process
     logging.info("Launching script")
     status = multiprocessing.Queue()
-    loop = multiprocessing.Process(target=script.control, args=(status,))
+    loop = multiprocessing.Process(target=script.control, args=(status, prov_mot,))
     loop.daemon = True
 
     # Do as houston says
@@ -67,3 +68,6 @@ def init():
 
     remote.listen(listen, port, True) # Listens on a loop
     logging.info("Autonomous run complete")
+
+if __name__ == "__main__":
+    init(motor.motors)

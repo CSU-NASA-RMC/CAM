@@ -1,14 +1,12 @@
 # Basic format of an autonomous runfile
-import multiprocessing
 import time
-import motor
 
-file_version = 0.0 # Retain compatibility
+file_version = 0.1 # Retain compatibility
 
 # This will be called by Houston
-def control(status):
+def control(status, motors):
     # Code here will run once
-    motor.stop()
+    motors.stop(False) # Hard stop motors
     i = 0
     while True:
         # Code here will run on a loop
@@ -22,4 +20,5 @@ def control(status):
 
         # Perform some check for completion
         if i == 20:
+            motors.stop(True) # Smooth stop motors
             return # Exit control script
