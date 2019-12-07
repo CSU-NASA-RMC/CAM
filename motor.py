@@ -12,6 +12,8 @@ class motors:
     def __init__(self):
         self.stop()
 
+        self.status = "OK" # TODO: real status checks
+
     def stop(self, smooth=False):
         logging.info("Stopping motors")
         print("All motors stop") # Filler

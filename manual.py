@@ -2,6 +2,7 @@
 import logging
 import remote
 import motor
+import lidar
 
 port = 42070 # For network
 
@@ -59,7 +60,7 @@ def handler(input):
     return "OK"
 
 
-def init(prov_mot):
+def init(prov_mot, prov_lidar):
     logging.info("Beginning manual control mode")
 
     # Send motor handler to global scope for network handlers to access
@@ -71,4 +72,4 @@ def init(prov_mot):
 
 # Testing
 if __name__ == "__main__":
-    init(motor.motors)
+    init(motor.motors, lidar.lidar)

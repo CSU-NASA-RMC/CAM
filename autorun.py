@@ -4,24 +4,29 @@ import importlib
 import logging
 import multiprocessing
 import motor
+import lidar
 
 port = 42071 # Port for communication
 
 script = None # Runfile to execute
 
+started = None # If thread has been run
+
 # Get runfile from houston
 def get_name(name):
     global script
+    global started
     try:
         logging.info("Loading file: " + name)
         script = importlib.import_module(name) # Import runfile as module
+        started = False
         return 'OK'
     except:
         logging.error("Load failed") # Probably filename was not found
         return 'LOAD FAIL'
 
 # Set up and start a run
-def init(prov_mot):
+def init(prov_mot, prov_lidar):
     global script
     logging.info("Beginning autonomous run")
     remote.listen(get_name, port) # Get name from Houston
@@ -31,7 +36,7 @@ def init(prov_mot):
     # Program will run as separate process
     logging.info("Launching script")
     status = multiprocessing.Queue()
-    loop = multiprocessing.Process(target=script.control, args=(status, prov_mot,))
+    loop = multiprocessing.Process(target=script.control, args=(status, prov_mot, prov_lidar,))
     loop.daemon = True
 
     # Do as houston says
@@ -44,12 +49,14 @@ def init(prov_mot):
 
         # Start process
         elif cmd == "GO":
-            if loop.exitcode == None and not loop.is_alive():
+            global started
+            if not started:
                 logging.info("Starting autonomous script")
                 loop.start()
+                started = True
                 return "OK"
             else:
-                logging.error("Instructed to start already running script")
+                logging.error("Script can only be run once")
                 return "NO"
 
         # Get status of process
@@ -70,4 +77,4 @@ def init(prov_mot):
     logging.info("Autonomous run complete")
 
 if __name__ == "__main__":
-    init(motor.motors)
+    init(motor.motors(), lidar.lidar())

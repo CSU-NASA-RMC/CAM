@@ -6,22 +6,24 @@ import manual
 import autorun
 import multiprocessing
 import motor
+import lidar
 
 logging.basicConfig(filename='CAM.log',
                     format='%(asctime)s : %(levelname)s : %(message)s',
-                    level=logging.DEBUG) # Log each run to file
+                    level=logging.INFO) # Log each run to file
 
 port = 42069  # Port for communication
 
 proc = None # Control thread
 
-motors = motor.motors # Motor manager
-motors.stop(False) # Hard stop motors
+motors = motor.motors() # Motor manager
+main_lidar = lidar.lidar() # LIDAR manager
 
 # Do what Houston says
 def cam(option):
     global proc
     global motors
+    global main_lidar
 
     logging.info("Executing command: " + option)
 
@@ -49,19 +51,19 @@ def cam(option):
 
     # Self test
     elif option == 'ST':
-        return self_test.self_test()
+        return self_test.self_test(motors, main_lidar)
 
     # Manual mode
     elif option == 'MM':
         # Spawn as separate process
-        proc = multiprocessing.Process(target=manual.init, args=(motors,))
+        proc = multiprocessing.Process(target=manual.init, args=(motors, main_lidar,))
         proc.start()
         return 'OK'
 
     # Autonomous run
     elif option == 'AR':
         # Spawn as separate process
-        proc = multiprocessing.Process(target=autorun.init, args=(motors,))
+        proc = multiprocessing.Process(target=autorun.init, args=(motors, main_lidar,))
         proc.start()
         return 'OK'
 

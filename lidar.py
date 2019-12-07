@@ -11,40 +11,53 @@ import time
 
 # Process LIDAR data and send to buffer
 def read_output(process, append, fov):
-    for line in iter(process.stdout.readline, ""):
-        try:
-            meas = line.decode('utf-8').split(' ')
-            angle = float(meas[4])
-            dist = float(meas[6])
-            quality = float(meas[8])
+    try:
+        for line in iter(process.stdout.readline, ""):
+            try:
+                meas = line.decode('utf-8').split(' ')
+                angle = float(meas[4])
+                dist = float(meas[6])
+                quality = float(meas[8])
 
-            if angle >= fov[0] and angle <= fov[1]:  # Within FOV
-                append([angle, dist, quality])
+                if angle >= fov[0] and angle <= fov[1]:  # Within FOV
+                    append([angle, dist, quality])
 
-        except:
-            logging.debug("Bad lidar data")
+            except:
+                logging.debug("Bad lidar data")
+    except:
+        logging.error("No lidar data")
+        append([0, 0, 0]) # Dummy data
 
 # Create object to connect to LIDAR
 class lidar:
     def __init__(self, buffer_size = 1000, field_of_view = [0, 360]):
         logging.info("Starting lidar")
 
-        # This all obeys GIL so there *shouldn't* be race conditions
-        self.buffer = collections.deque(maxlen=buffer_size) # Buffer to hold most recent values
-        self.proc = subprocess.Popen("./lidar.o", stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Iterator thread to keep buffer updated
+        self.info = "Starting"
 
-        self.info = [] # Diagnostic info
-        for i in range(6): # First 6 lines contain diagnostics
-            self.info.append(self.proc.stdout.readline().decode('utf-8').split(':'))
+        try:
+            # This all obeys GIL so there *shouldn't* be race conditions
+            self.buffer = collections.deque(maxlen=buffer_size) # Buffer to hold most recent values
+            self.proc = subprocess.Popen("./lidar.o", stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Iterator thread to keep buffer updated
 
-        # Toss out first readings as sensor spools up
-        for i in range(1000):
-            self.proc.stdout.readline()
+            self.info = [] # Diagnostic info
+            for i in range(6): # First 6 lines contain diagnostics
+                self.info.append(self.proc.stdout.readline().decode('utf-8').split(':'))
 
-        # Start iterator
-        self.t = threading.Thread(target=read_output, args=(self.proc, self.buffer.append, field_of_view))
-        self.t.daemon = True
-        self.t.start()
+            # Toss out first readings as sensor spools up
+            for i in range(1000):
+                self.proc.stdout.readline()
+
+            # Start iterator
+            self.t = threading.Thread(target=read_output, args=(self.proc, self.buffer.append, field_of_view))
+            self.t.daemon = True
+            self.t.start()
+        except:
+            logging.error("LIDAR could not be started")
+
+            # Junk data so other stuff doesn't crash
+            self.info = "FAIL"
+            self.buffer = [[0, 0, 0]]
 
 
 # Testing
@@ -53,7 +66,7 @@ if __name__ == "__main__":
     print("Initialized")
     time.sleep(1)
     print("Printing buffer")
-    print(test.buffer[0][0])
+    print(test.info)
     time.sleep(2)
     print(test.buffer[0])
     time.sleep(2)
