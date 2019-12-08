@@ -3,6 +3,7 @@ import logging
 import remote
 import motor
 import lidar
+import time
 
 port = 42070 # For network
 
@@ -30,11 +31,18 @@ def handler(input):
     # 6 'ABS_HAT0X'   D-Pad horizontal        -1=left
     # 7 'ABS_HAT0Y'   D-Pad vertical          -1=up
     if in_type == 'axis':
+        # Convert from strings
+        for i in range(len(input)):
+            input[i] = float(input[i])
+
+        motors.direction(input[1] * -1, input[0])  # Wheel rotation
+
         if in_diff == 'Easy':
-            print("easy mode, axis")
+            # TODO
+            pass
 
         elif in_diff == 'Advanced':
-            print("advanced mode, axis")
+            motors.aug(input[5]-input[4]) # Auger rotation
 
     # Handle button input
     # BTN_SOUTH     A
@@ -49,11 +57,26 @@ def handler(input):
     # BTN_THUMBR    Right stick click
     # BTN_THUMBL    Left stick click
     elif in_type == 'btn':
+        state = int(input[1])
+        button = input[0]
+
         if in_diff == 'Easy':
-            print("easy mode, button")
+            # TODO
+            pass
 
         elif in_diff == 'Advanced':
-            print("advanced mode, button")
+            if button == "BTN_SOUTH":   # Advance auger
+                motors.sld(state)
+            elif button == "BTN_EAST":  # Raise depositor
+                motors.bkt(state)
+            elif button == "BTN_NORTH": # Lower depositor
+                motors.bkt(-1 * state)
+            elif button == "BTN_WEST":  # Retract auger
+                motors.sld(-1 * state)
+            elif button == "BTN_TL":    # Tilt auger up
+                motors.tlt(-1 * state)
+            elif button == "BTN_TR":    # Tilt auger down
+                motors.tlt(state)
 
     # TODO do something with inputs
 

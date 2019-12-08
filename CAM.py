@@ -74,16 +74,6 @@ def cam(option):
         # TODO: Delayed linux shutdown command
         return 'CC'
 
-    # Send logs to Houston
-    elif option == 'SL':
-        # TODO
-        return 'OK'
-
-    # Retrieve runfile from houston
-    elif option == 'UP':
-        # TODO
-        return 'OK'
-
     # Not found
     else:
         logging.error("Command not found")
