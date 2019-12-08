@@ -7,6 +7,7 @@ import autorun
 import multiprocessing
 import motor
 import lidar
+import os
 
 logging.basicConfig(filename='CAM.log',
                     format='%(asctime)s : %(levelname)s : %(message)s',
@@ -71,7 +72,7 @@ def cam(option):
     elif option == 'SD':
         logging.info("Shutting down")
         logging.shutdown()
-        # TODO: Delayed linux shutdown command
+        os.system('(sleep 10 ; sudo poweroff) &')
         return 'CC'
 
     # Not found
