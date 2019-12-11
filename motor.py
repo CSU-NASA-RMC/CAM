@@ -1,57 +1,127 @@
 # Handle the motor controllers
 import logging
+from pymata_aio.pymata3 import PyMata3
+from pymata_aio.constants import Constants
+import time
 
+# TODO PID Control for each motor
+# TODO Limit checks
+
+# Shift range from [-1,1] to [0,180]
+def map_sabertooth(speed):
+    if speed == 0:
+        return 90 # Stopped
+    else:
+        speed += 1
+        speed /= 2
+        speed *= 180
+        speed = int(speed)
+        return speed
+
+def map_syren(speed):
+    if speed == 0:
+        return 90 # Stopped
+    else:
+        speed += 1
+        speed /= 2
+        speed *= 180
+        speed = int(speed)
+        return speed
 
 class motors:
-    def heartbeat(self):
-        # Provide beat for watchdog to enable drivers
-        while self.status == "OK":
-            #TODO
-            pass
-
-    # TODO PID Control for each motor
-    # TODO Limit checks
-    # TODO Integrate with pyfirmata
-
-    # Wheel FL
-    def FL(self, speed):
-        return
-
-    # Wheel FR
-    def FR(self, speed):
-        return
-
-    # Wheel RL
-    def RL(self, speed):
-        return
-
-    # Wheel RR
-    def RR(self, speed):
-        return
-
-    # Auger
-    def aug(self, speed):
-        return
-
-    # Slider
-    def sld(self, speed):
-        return
-
-    # Tilt-mining
-    def tlt(self, speed):
-        return
-
-    # Deposit bucket
-    def bkt(self, speed):
-        return
-
     def __init__(self):
         self.status = "Initializing"
+        logging.info("Initializing motor drivers")
+
+        self.ard0 = PyMata3(arduino_wait=2, com_port='COM5') # TODO /dev/ttyACM?
+        self.ard1 = PyMata3(arduino_wait=2, com_port='COM6')  # TODO /dev/ttyUSB?
+
+        # FL
+        self.m0 = 3
+        self.ard0.servo_config(self.m0, 1000, 2000)
+
+        # FR
+        self.m1 = 5
+        self.ard0.servo_config(self.m0, 1000, 2000)
+
+        # RL
+        self.m2 = 6
+        self.ard0.servo_config(self.m0, 1000, 2000)
+
+        # RR
+        self.m3 = 9
+        self.ard0.servo_config(self.m0, 1000, 2000)
+
+        # Auger
+        self.m4 = 13
+        self.ard0.servo_config(self.m0, 1000, 2000)
+
+        # Slider
+        self.m5 = 3
+        self.ard1.servo_config(self.m0, 1000, 2000)
+
+        # Tilt-mining
+        self.m6 = 10
+        self.ard0.servo_config(self.m0, 1000, 2000)
+
+        # Deposit bucket
+        self.m7 = 11
+        self.ard0.servo_config(self.m0, 1000, 2000)
+
         self.stop()
 
         self.status = "OK" # TODO: real status check (arduinos present, etc)
 
+    # Wheel FL
+    def FL(self, speed):
+        speed = map_sabertooth(speed)
+        self.ard0.analog_write(self.m0, speed)
+        return
+
+    # Wheel FR
+    def FR(self, speed):
+        speed = map_sabertooth(speed)
+        self.ard0.analog_write(self.m1, speed)
+        return
+
+    # Wheel RL
+    def RL(self, speed):
+        speed = map_sabertooth(speed)
+        self.ard0.analog_write(self.m2, speed)
+        return
+
+    # Wheel RR
+    def RR(self, speed):
+        speed = map_sabertooth(speed)
+        self.ard0.analog_write(self.m3, speed)
+        return
+
+    # Auger
+    def aug(self, speed):
+        speed = map_syren(speed)
+        self.ard0.analog_write(self.m4, speed)
+        return
+
+    # Slider
+    def sld(self, speed):
+        speed = map_syren(speed)
+        self.ard1.analog_write(self.m5, speed)
+        return
+
+    # Tilt-mining
+    def tlt(self, speed):
+        speed = map_sabertooth(speed)
+        self.ard0.analog_write(self.m6, speed)
+        return
+
+    # Deposit bucket
+    def bkt(self, speed):
+        speed = map_sabertooth(speed)
+        self.ard0.analog_write(self.m7, speed)
+        return
+
     def stop(self, smooth=False):
+        # TODO smooth stop
         logging.info("Stopping motors")
         self.FL(0)
         self.FR(0)
@@ -88,11 +158,20 @@ class motors:
         w = (1-abs(speed))*dir+dir
         l = (v+w)/2
         r = (v-w)/2
-
         self.tank(l, r)
+
+    def heartbeat(self):
+        # Provide beat for watchdog to enable drivers
+        while self.status == "OK":
+            #TODO
+            pass
 
 
 # Testing
 if __name__ == "__main__":
     test = motors()
     test.stop(False)
+    for i in range(-1000, 1000, 1):
+        test.wheel(0, i/1000)
+        print(i/1000)
+        time.sleep(0.01)
