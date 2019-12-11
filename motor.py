@@ -42,31 +42,31 @@ class motors:
 
         # FR
         self.m1 = 5
-        self.ard0.servo_config(self.m0, 1000, 2000)
+        self.ard0.servo_config(self.m1, 1000, 2000)
 
         # RL
         self.m2 = 6
-        self.ard0.servo_config(self.m0, 1000, 2000)
+        self.ard0.servo_config(self.m2, 1000, 2000)
 
         # RR
         self.m3 = 9
-        self.ard0.servo_config(self.m0, 1000, 2000)
+        self.ard0.servo_config(self.m3, 1000, 2000)
 
         # Auger
         self.m4 = 13
-        self.ard0.servo_config(self.m0, 1000, 2000)
+        self.ard0.servo_config(self.m4, 1000, 2000)
 
         # Slider
         self.m5 = 3
-        self.ard1.servo_config(self.m0, 1000, 2000)
+        self.ard1.servo_config(self.m5, 1000, 2000)
 
         # Tilt-mining
         self.m6 = 10
-        self.ard0.servo_config(self.m0, 1000, 2000)
+        self.ard0.servo_config(self.m6, 1000, 2000)
 
         # Deposit bucket
         self.m7 = 11
-        self.ard0.servo_config(self.m0, 1000, 2000)
+        self.ard0.servo_config(self.m7, 1000, 2000)
 
         self.stop()
 
