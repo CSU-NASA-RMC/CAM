@@ -7,6 +7,6 @@ This is the main rover program. It is intended to run on boot of the main contro
 * Change into the CAM directory (/home/cam/CAM as of writing)
 * Run the following commands to pull changes from the master tree and reload CAM.py
 
-        killall *python*
+        killall python3
         git pull
         sudo reboot
