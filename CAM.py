@@ -72,7 +72,7 @@ def cam(option):
     elif option == 'SD':
         logging.info("Shutting down")
         logging.shutdown()
-        os.system('(sleep 10 ; sudo poweroff) &')
+        os.system('(sleep 5 ; sudo poweroff) &')
         return 'CC'
 
     # Not found
@@ -86,3 +86,5 @@ if __name__ == "__main__":
     print("Begin listening")
     logging.info("Starting up")
     remote.listen(cam, port, True) # Listens on a loop
+    while True:
+        pass # Hold for shutdown command to go through
