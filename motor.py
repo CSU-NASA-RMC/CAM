@@ -32,9 +32,10 @@ class motors:
     def __init__(self):
         self.status = "Initializing"
         logging.info("Initializing motor drivers")
-
-        self.ard0 = PyMata3(arduino_wait=2, com_port='COM5') # TODO /dev/ttyACM?
-        self.ard1 = PyMata3(arduino_wait=2, com_port='COM6')  # TODO /dev/ttyUSB?
+        
+        # Arduinos must be flashed with Standard Firmata
+        self.ard0 = PyMata3(arduino_wait=2, com_port='/dev/ttyACM2') # Lattepanda onboard arduino
+        self.ard1 = PyMata3(arduino_wait=2, com_port='/dev/ttyACM1')  # Additional arduino micro
 
         # FL
         self.m0 = 3
