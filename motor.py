@@ -105,7 +105,7 @@ class motors:
 
     # Slider
     def sld(self, speed):
-        speed = map_syren(speed)
+        speed = map_syren(speed - 0.12) # Zero speed is slightly off
         self.ard1.analog_write(self.m5, speed)
         return
 
