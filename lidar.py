@@ -38,7 +38,7 @@ class lidar:
         try:
             # This all obeys GIL so there *shouldn't* be race conditions
             self.buffer = collections.deque(maxlen=buffer_size) # Buffer to hold most recent values
-            self.proc = subprocess.Popen("./lidar.o", stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Iterator thread to keep buffer updated
+            self.proc = subprocess.Popen("/home/cam/CAM/lidar.o", stdout=subprocess.PIPE, stderr=subprocess.PIPE) # Iterator thread to keep buffer updated
 
             self.info = [] # Diagnostic info
             for i in range(6): # First 6 lines contain diagnostics
