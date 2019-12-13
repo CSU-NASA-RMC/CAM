@@ -54,8 +54,8 @@ class motors:
         self.ard0.servo_config(self.m3, 1000, 2000)
 
         # Auger
-        self.m4 = 13
-        self.ard0.servo_config(self.m4, 1000, 2000)
+        self.m4 = 5
+        self.ard1.servo_config(self.m4, 1000, 2000)
 
         # Slider
         self.m5 = 3
@@ -100,7 +100,7 @@ class motors:
     # Auger
     def aug(self, speed):
         speed = map_syren(speed)
-        self.ard0.analog_write(self.m4, speed)
+        self.ard1.analog_write(self.m4, speed)
         return
 
     # Slider
