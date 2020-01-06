@@ -8,4 +8,4 @@ This is the main rover program. A service is intended to run on boot of the main
 
         systemctl --user stop cam.service
         git pull
-        systemctl --user start cam.service
+        sudo reboot
