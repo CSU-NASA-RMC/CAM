@@ -16,15 +16,20 @@ class dwm:
         self.ser = serial.Serial()
         self.ser.baudrate = 115200  # Per DWM specs
         self.ser.port = port
+        self.ser.timeout = 1
         try:
             # Enter DWM shell mode, start ranging stream
             self.ser.open()
-            self.ser.write(b'\r\r')
-            time.sleep(1)
-            self.ser.write(b'les\r')
 
-            for i in range(20): # Toss out login message
-                self.ser.readline()
+            if self.ser.readline() == b"": # DWM not initialized
+                # TODO: If DWM is already initialized w/ no anchors connected output is the same as uninitialized
+                # TODO: Improbable case but would cause an issue trying to initialize again
+                self.ser.write(b'\r\r')
+                time.sleep(1)
+                self.ser.write(b'les\r')
+
+                for i in range(20): # Toss out login message
+                    self.ser.readline()
 
             self.status = "Ready"
 
@@ -36,18 +41,24 @@ class dwm:
     def read(self):
         if self.status != "Ready":
             return ""
-        else:
-            try:
-                data = self.ser.readline()
-            except:
-                data = ""
-                self.status = "Fail"
-        return data.decode("utf-8")
+
+        data = self.ser.readline()
+        data = data.decode("utf-8")
+
+        if data.startswith("["): # If anchor is powered on after rover, fw info is printed upon connection
+            data = ""
+
+        return data
 
     # Get ranges from output stream
     def read_range(self):
         # Raw data is of the form "DAB7[2.00,0.00,0.00]=1.25 50B9[0.00,0.00,0.00]=1.63 ..."
         data = self.read()
+
+        if data == "":
+            logging.error("Couldn't get any anchor distances")
+            return []
+
         data = data.split(' ')
         ranges = []
         for anchor in data[:-1]: # Last element is return char
