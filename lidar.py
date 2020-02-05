@@ -108,7 +108,7 @@ class lidar:
 
 
 # Testing
-def live_graph(prov_lid): # Live graph of LIDAR data
+def live_graph(prov_lid): # Live graph of LIDAR data (CPU heavy)
     import matplotlib.pyplot as plt
     import matplotlib.animation as anim
 
@@ -137,6 +137,7 @@ def live_graph(prov_lid): # Live graph of LIDAR data
 
 
 if __name__ == "__main__":
+    import time
     test = lidar(buffer_size=600, field_of_view=[90, 270], testing=True)
     test.calibrate()
     live_graph(test)

@@ -139,7 +139,7 @@ class locator:
         return self.calc_cart(dist1, dist2)
 
 # Testing
-def live_graph(prov_loc): # Live graph of LIDAR data (CPU heavy)
+def live_graph(prov_loc): # Live graph of DWM data (CPU heavy)
     import matplotlib.pyplot as plt
     import matplotlib.animation as anim
 

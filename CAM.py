@@ -8,10 +8,19 @@ import multiprocessing
 import motor
 import lidar
 import os
+import sys
+import pydevd
 
 logging.basicConfig(filename='CAM.log',
                     format='%(asctime)s : %(levelname)s : %(message)s',
                     level=logging.INFO) # Log each run to file
+
+# Enables remote debugging
+try:
+    pydevd.settrace('192.168.56.1', port=42042, stdoutToServer=True, stderrToServer=True)
+except:
+    logging.error("Could not connect to remote debugger")
+
 
 port = 42069  # Port for communication
 
@@ -84,7 +93,7 @@ def cam(option):
 # Runs on boot of CAM
 if __name__ == "__main__":
     print("Begin listening")
-    logging.info("Starting up")
+    logging.info("Starting listener")
     remote.listen(cam, port, True) # Listens on a loop
     while True:
         pass # Hold for shutdown command to go through

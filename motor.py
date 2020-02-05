@@ -34,8 +34,13 @@ class motors:
         logging.info("Initializing motor drivers")
         
         # Arduinos must be flashed with Standard Firmata
-        self.ard0 = PyMata3(arduino_wait=2, com_port='/dev/ttyACM2') # Lattepanda onboard arduino
-        self.ard1 = PyMata3(arduino_wait=2, com_port='/dev/ttyACM1')  # Additional arduino micro
+        try:
+            self.ard0 = PyMata3(arduino_wait=2, com_port='/dev/ttyACM2') # Lattepanda onboard arduino
+            self.ard1 = PyMata3(arduino_wait=2, com_port='/dev/ttyACM1')  # Additional arduino micro
+        except:
+            logging.error("Motor fail")
+            self.status = "FAIL"
+            return
 
         # FL
         self.m0 = 3
