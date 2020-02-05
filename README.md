@@ -21,7 +21,13 @@ This is the main rover program. A service is intended to run on boot of the main
 
 ## Update rover from local repo
 * Set up [Remote Debug Configuration](https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html#remote-debug-config) for a Pycharm Pro project in a local CAM directory
+* Connect to rover via SSH and run
+
+        systemctl stop cam.service
 * Tools>Deployment>Upload to *xxx*
+* Connect to rover via SSH and run
+
+        systemctl start cam.service
 
 ## Connect as Remote Debugger
 * Set up [Remote Debug Configuration](https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html#remote-debug-config) for a Pycharm Pro project in a local CAM directory
