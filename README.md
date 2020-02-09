@@ -8,7 +8,7 @@ This is the main rover program. A service is intended to run on boot of the main
 * Hold power button on side of control box for 3 seconds
 * Launch the [Houston utility](https://github.com/CSU-NASA-RMC/houston)
 
-*For manual control, the Xbox controller must be connected to your computer before launching Houston*
+For manual control, the Xbox controller must be connected to your computer **before** launching Houston
 
 ## Update rover from Github repo
 * Connect to the rover via SSH
@@ -23,18 +23,21 @@ This is the main rover program. A service is intended to run on boot of the main
 * Set up [Remote Debug Configuration](https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html#remote-debug-config) for a Pycharm Pro project in a local CAM directory
 * Connect to rover via SSH and run
 
-        systemctl stop cam.service
-* Tools>Deployment>Upload to *xxx*
+        systemctl --user stop cam.service
+* In Pycharm: Tools>Deployment>Upload to *xxx*
 * Connect to rover via SSH and run
 
-        systemctl start cam.service
+        systemctl --user start cam.service
 
 ## Connect as Remote Debugger
 * Set up [Remote Debug Configuration](https://www.jetbrains.com/help/pycharm/remote-debugging-with-product.html#remote-debug-config) for a Pycharm Pro project in a local CAM directory
-* Set your computer's IP in CAM.py for pydevd
-* Connect to rover via SSH
+* Set your computer's IP in CAM.py for pydevd (ideally set it as static in the router config)
+* Connect to rover via SSH and run 
+
+        systemctl --user stop cam.service
+* In Pycharm: Tools>Deployment>Upload to *xxx*
 * Start debug server on your computer
-* Run the following command
+* Connect to rover via SSH and run
 
         systemctl --user restart cam.service
 * You are now connected to the interpreter running on the rover
