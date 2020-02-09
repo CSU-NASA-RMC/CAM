@@ -80,25 +80,25 @@ class motors:
 
     # Wheel FL
     def FL(self, speed):
-        speed = map_sabertooth(speed)
+        speed = map_sabertooth(speed * -1)
         self.ard0.analog_write(self.m0, speed)
         return
 
     # Wheel FR
     def FR(self, speed):
-        speed = map_sabertooth(speed)
+        speed = map_sabertooth(speed * -1)
         self.ard0.analog_write(self.m1, speed)
         return
 
     # Wheel RL
     def RL(self, speed):
-        speed = map_sabertooth(speed)
+        speed = map_sabertooth(speed * -1)
         self.ard0.analog_write(self.m2, speed)
         return
 
     # Wheel RR
     def RR(self, speed):
-        speed = map_sabertooth(speed)
+        speed = map_sabertooth(speed * -1)
         self.ard0.analog_write(self.m3, speed)
         return
 
