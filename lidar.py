@@ -69,6 +69,9 @@ class lidar:
             for i in range(6): # First 6 lines contain diagnostics
                 self.info.append(self.proc.stdout.readline().decode('utf-8').split(':'))
 
+            if self.info[2] == ['']: # Likely no lidar connected
+                raise # Trigger the except handler
+
             # Toss out first readings as sensor spools up
             for i in range(1000):
                 self.proc.stdout.readline()
@@ -107,37 +110,38 @@ class lidar:
         self.load_ref()
 
 
-# Testing
-def live_graph(prov_lid): # Live graph of LIDAR data (CPU heavy)
-    import matplotlib.pyplot as plt
-    import matplotlib.animation as anim
-
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 2, 1, projection='polar')
-    ax2 = fig.add_subplot(1, 2, 2)
-
-    def animate(i):
-        data = prov_lid.buffer
-        angles = []
-        dists = []
-        devs = []
-        quals = []
-        for point in data:
-            angles.append((360 - point[0]) / 180 * 3.1415)
-            dists.append(point[1])
-            devs.append(point[2])
-            quals.append(point[3])
-        ax.clear()
-        ax2.clear()
-        ax.scatter(angles, dists, s=10, c=quals)
-        ax2.scatter(angles, devs, s=10)
-
-    ani = anim.FuncAnimation(fig, animate, interval=100)
-    plt.show()
-
-
 if __name__ == "__main__":
+    # Testing
+    def live_graph(prov_lid):  # Live graph of LIDAR data (CPU heavy)
+        import matplotlib.pyplot as plt
+        import matplotlib.animation as anim
+
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 2, 1, projection='polar')
+        ax2 = fig.add_subplot(1, 2, 2)
+
+        def animate(i):
+            data = prov_lid.buffer
+            angles = []
+            dists = []
+            devs = []
+            quals = []
+            for point in data:
+                angles.append((360 - point[0]) / 180 * 3.1415)
+                dists.append(point[1])
+                devs.append(point[2])
+                quals.append(point[3])
+            ax.clear()
+            ax2.clear()
+            ax.scatter(angles, dists, s=10, c=quals)
+            ax2.scatter(angles, devs, s=10)
+
+        ani = anim.FuncAnimation(fig, animate, interval=100)
+        plt.show()
+
     import time
     test = lidar(buffer_size=600, field_of_view=[90, 270], testing=True)
+    if test.info != 'READY':
+        exit()
     test.calibrate()
     live_graph(test)
